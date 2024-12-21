@@ -8,6 +8,7 @@ import {MessagesService} from "../messages/messages.service";
 import {catchError, from, throwError} from "rxjs";
 import {toObservable, toSignal, outputToObservable, outputFromObservable} from "@angular/core/rxjs-interop";
 import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.component';
+import { LoadingService } from '../loading/loading.service';
 
 @Component({
   selector: 'home',
@@ -23,6 +24,7 @@ import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.c
 export class HomeComponent implements OnInit {
 
   coursesService = inject(CoursesService);
+  loadingService = inject(LoadingService);
 
   dialog = inject(MatDialog);
 
@@ -49,11 +51,14 @@ export class HomeComponent implements OnInit {
 
   async loadCourses(): Promise<void> {
     try {
+      // this.loadingService.loadingOn();
       const courses = await this.coursesService.leadAllCourses();
       this.#courses.set(courses);
     } catch (e) {
       alert('Error loading courses!');
       console.error(e);
+    // } finally {
+    //   this.loadingService.loadingOff();
     }
   }
 

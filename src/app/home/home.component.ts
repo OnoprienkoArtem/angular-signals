@@ -24,7 +24,7 @@ import { LoadingService } from '../loading/loading.service';
 export class HomeComponent implements OnInit {
 
   coursesService = inject(CoursesService);
-  loadingService = inject(LoadingService);
+  messagesService = inject(MessagesService);
 
   dialog = inject(MatDialog);
 
@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit {
       const courses = await this.coursesService.leadAllCourses();
       this.#courses.set(courses);
     } catch (e) {
-      alert('Error loading courses!');
+      this.messagesService.showMessage('Error loading courses!', 'error');
       console.error(e);
     // } finally {
     //   this.loadingService.loadingOff();

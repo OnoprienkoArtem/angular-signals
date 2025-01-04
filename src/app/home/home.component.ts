@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CoursesService } from '../services/courses.service';
 import {Course, sortCoursesBySeqNo} from "../models/course.model";
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
@@ -9,6 +9,7 @@ import {catchError, from, throwError} from "rxjs";
 import {toObservable, toSignal, outputToObservable, outputFromObservable} from "@angular/core/rxjs-interop";
 import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.component';
 import { LoadingService } from '../loading/loading.service';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'home',
@@ -16,7 +17,8 @@ import { LoadingService } from '../loading/loading.service';
   imports: [
     MatTabGroup,
     MatTab,
-    CoursesCardListComponent
+    CoursesCardListComponent,
+    MatTooltip
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -30,6 +32,8 @@ export class HomeComponent implements OnInit {
 
   #courses = signal<Course[]>([]);
 
+  beginnersList = viewChild('beginnersList', { read: MatTooltip });
+
   beginnerCourses = computed(() => {
     return this.#courses().filter(course => course.category === "BEGINNER");
   });
@@ -39,6 +43,10 @@ export class HomeComponent implements OnInit {
   });
 
   constructor() {
+    effect(() => {
+      console.log('beginnersList: ', this.beginnersList());
+    });
+
     effect(() => {
       console.log('BEGINNER', this.beginnerCourses());
       console.log('ADVANCED', this.advancedCourses());

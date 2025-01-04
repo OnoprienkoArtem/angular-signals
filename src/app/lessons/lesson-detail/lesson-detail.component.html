@@ -4,7 +4,7 @@
 
   <div class="form-control edit-lesson">
     <label>Lesson title:</label>
-    <input placeholder="Enter course title">
+    <input placeholder="Enter course title" [value]="lesson()?.description">
   </div>
 
 </div>
@@ -15,7 +15,7 @@
     Save
   </button>
 
-  <button class="btn">
+  <button class="btn" (click)="onCancel()">
     Cancel
   </button>
 

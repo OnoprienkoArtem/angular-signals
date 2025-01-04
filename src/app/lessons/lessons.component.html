@@ -4,7 +4,7 @@
     <div class="header">
       <h1>Search Lessons</h1>
       <div class="form-control search-controls">
-        <input placeholder="Search for a lesson" (keyup.enter)="onSearch()">
+        <input placeholder="Search for a lesson" (keyup.enter)="onSearch()" #search>
         <button class="btn search" (click)="onSearch()">Search</button>
       </div>
     </div>
@@ -13,7 +13,7 @@
       <div class="table-container">
         <table class="results-table">
           @for (lesson of lessons(); track lesson.id) {
-            <tr>
+            <tr (click)="onLessonSelected(lesson)">
               <td>{{ lesson.description }}</td>
               <td>{{ lesson.duration }}</td>
             </tr>
@@ -22,7 +22,10 @@
       </div>
     }
   } @else {
-
+    <lesson-detail
+      [lesson]="selectedLesson()"
+      (cancel)="onCancel()"
+    />
   }
 
 </div>

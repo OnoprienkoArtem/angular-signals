@@ -10,5 +10,11 @@ import {CourseCategory} from "../models/course-category.model";
 })
 export class CourseCategoryComboboxComponent {
 
+  label = input.required<string>();
 
+  value = model.required<CourseCategory>();
+
+  onCategoryChange(category: string): void {
+    this.value.set(category as CourseCategory);
+  }
 }

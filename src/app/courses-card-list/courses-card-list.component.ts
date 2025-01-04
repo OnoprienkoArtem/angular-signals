@@ -31,6 +31,10 @@ export class CoursesCardListComponent {
         course,
       });
 
+    if (!newCourse) {
+      return;
+    }
+
     this.updatedCourse.emit(newCourse);
   }
 

@@ -1,15 +1,15 @@
-import { Component, computed, effect, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, inject, Injector, OnInit, signal, viewChild } from '@angular/core';
 import { CoursesService } from '../services/courses.service';
 import {Course, sortCoursesBySeqNo} from "../models/course.model";
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {CoursesCardListComponent} from "../courses-card-list/courses-card-list.component";
 import {MatDialog} from "@angular/material/dialog";
 import {MessagesService} from "../messages/messages.service";
-import {catchError, from, throwError} from "rxjs";
 import {toObservable, toSignal, outputToObservable, outputFromObservable} from "@angular/core/rxjs-interop";
 import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.component';
 import { LoadingService } from '../loading/loading.service';
 import { MatTooltip } from '@angular/material/tooltip';
+import { from, interval } from 'rxjs';
 
 @Component({
   selector: 'home',
@@ -24,6 +24,7 @@ import { MatTooltip } from '@angular/material/tooltip';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
+  injector = inject(Injector);
 
   coursesService = inject(CoursesService);
   messagesService = inject(MessagesService);
@@ -42,7 +43,23 @@ export class HomeComponent implements OnInit {
     return this.#courses().filter(course => course.category === "ADVANCED");
   });
 
+  courses$ = toObservable(this.#courses);
+
+  coursesToSignal = from(this.coursesService.leadAllCourses());
+
+  onToSignalExample() {
+    // const courses = toSignal(this.coursesToSignal, { injector: this.injector });
+    const number$ = interval(1000);
+    const numbers = toSignal(number$, { injector: this.injector });
+    effect(() => {
+      // console.log(`courses: `, courses());
+      console.log(`Numbers: `, numbers());
+    }, { injector: this.injector });
+  }
+
   constructor() {
+    this.courses$.subscribe(courses => console.log('signal toObservable', courses))
+
     effect(() => {
       console.log('beginnersList: ', this.beginnersList());
     });
@@ -55,6 +72,20 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCourses().then(() => console.log('All courses leaded: ', this.#courses()));
+  }
+
+  onToObservableExample() {
+    const numbers = signal(0);
+    numbers.set(1);
+    numbers.set(2);
+    numbers.set(3);
+    const numbers$ = toObservable(numbers, { injector: this.injector });
+    numbers.set(4);
+
+    numbers$.subscribe(val => {
+      console.log(`numbers$: `, val);
+    });
+    numbers.set(5); // only this value appears after execute this method
   }
 
   async loadCourses(): Promise<void> {
